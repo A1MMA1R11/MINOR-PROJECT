@@ -20,15 +20,21 @@ def predict():
     '''
     For rendering results on HTML GUI
     '''
-    int_features = [float(x) for x in request.form.values()]
+    try:
+        int_features = [float(x) for x in request.form.values()]
+    except ValueError:
+        return render_template('index1.html', prediction_text="Invalid input: Please enter numeric values.")
     final_features = [np.array(int_features)]
     features_name = ['mean_radius', 'mean_texture', 'mean_perimeter']
     df = pd.DataFrame(final_features, columns=features_name)
-    output = model.predict(df)
-    if output == 1:
-        res_val = "breast cancer"
-    else:
+    output = model.predict(df.values)[0]
+
+    print(output)
+
+    if output == 0:
         res_val = "no breast cancer"
+    else:
+        res_val = "breast cancer"
     return render_template('index1.html', prediction_text='Patient has :{}'.format(res_val))
 
 
